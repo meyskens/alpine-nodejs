@@ -1,0 +1,18 @@
+sudo: required
+
+language: bash
+
+services:
+    - docker
+
+before_install:
+    - sudo apt-get -y install qemu-user-static
+    - docker pull multiarch/qemu-user-static:register
+    - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+    - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+script:
+    - make TARGET=amd64 VERSION=4.4.2 NPM_VERSION=2
+    - make TARGET=armhf VERSION=4.4.2 NPM_VERSION=2
+    - make TARGET=amd64 VERSION=v5.10.0 NPM_VERSION=3
+    - make TARGET=armhf VERSION=v5.10.0 NPM_VERSION=3
+    - docker push meyskens/alpine-nodejs
